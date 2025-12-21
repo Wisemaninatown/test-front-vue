@@ -7,6 +7,8 @@
     nexus_url: "http://localhost:8082/repository/view-release"
     # Nexus 저장소 경로: com/wiseman/frontend-app/{버전}/{파일명}
     artifact_path: "com/wiseman/frontend-app/{{ build_number }}/frontend-build-{{ build_number }}.tar.gz"
+    # 다운로드 받을 임시 경로 지정
+    temp_file: "/tmp/frontend-build-{{ build_number }}.tar.gz"
     
   tasks:
     - name: 1. 기존 파일들만 삭제 (Clean)
