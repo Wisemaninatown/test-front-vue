@@ -9,12 +9,11 @@
     artifact_path: "com/wiseman/frontend-app/{{ build_number }}/frontend-build-{{ build_number }}.tar.gz"
     
   tasks:
-    - name: 1. 기존 웹 폴더 비우기
-      file:
-        path: /var/www/html
-        state: absent
+    - name: 1. 기존 파일들만 삭제 (Clean)
+      shell: rm -rf /var/www/html/*
+      ignore_errors: yes  # 폴더가 비어있어도 에러 안 나게 설정
 
-    - name: 2. 웹 폴더 다시 만들기
+    - name: 2. 웹 폴더 존재 확인
       file:
         path: /var/www/html
         state: directory
