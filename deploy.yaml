@@ -1,0 +1,35 @@
+---
+- name: Deploy from Nexus to Nginx
+  hosts: localhost
+  connection: local
+  vars:
+    # 1. Nexus 접속 정보 (변수로 받음)
+    nexus_url: "http://localhost:8082/repository/view-release"
+    # Nexus 저장소 경로: com/wiseman/frontend-app/{버전}/{파일명}
+    artifact_path: "com/wiseman/frontend-app/{{ build_number }}/frontend-build-{{ build_number }}.tar.gz"
+    
+  tasks:
+    - name: 1. 기존 웹 폴더 비우기
+      file:
+        path: /var/www/html
+        state: absent
+
+    - name: 2. 웹 폴더 다시 만들기
+      file:
+        path: /var/www/html
+        state: directory
+        mode: '0755'
+
+    - name: 3. Nexus에서 파일 다운로드 및 압축 해제
+      unarchive:
+        # 다운로드할 전체 URL 조합
+        src: "{{ nexus_url }}/{{ artifact_path }}"
+        dest: /var/www/html/
+        remote_src: yes
+        # [중요] Nexus 로그인 정보 (젠킨스에서 전달받음)
+        url_username: "{{ nexus_user }}"
+        url_password: "{{ nexus_pass }}"
+        # [중요] 압축 풀 때 최상위 'dist' 폴더 껍질을 벗겨냄
+        # 이걸 안 하면 /var/www/html/dist/index.html 이렇게 생겨버림
+        extra_opts:
+          - --strip-components=1
